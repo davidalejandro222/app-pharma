@@ -98,3 +98,171 @@ Route::get('/medicamentos', function () {
 
     return $html;
 });
+
+Route::get('/clientes/vip', function() {
+    // Creamos la lista de clientes
+    $clientes = [
+        (object) ['id' => 1, 'nombre' => 'Karen Criollo', 'telefono' => '+503 70000000', 'puntos_acumulados' => 15],
+        (object) ['id' => 2, 'nombre' => 'Joel Cruz', 'telefono' => '+503 76000000', 'puntos_acumulados' => 5],
+        (object) ['id' => 3, 'nombre' => 'Cristofer Guevara', 'telefono' => '+503 76000000', 'puntos_acumulados' => 25]
+    ];
+
+    // Creamos la tabla con los registros de los clientes de forma dinamica
+    $html = '
+    <table border=1 cellspacing=0>
+        <thead>
+            <tr>
+                <th>ID CLIENTE</th>
+                <th>NOMBRE</th>
+                <th>TELEFONO</th>
+                <th>PUNTOS ACUMULADOS</th>
+            </tr>
+        </thead>
+        <tbody>
+    ';
+
+    foreach($clientes as $cliente) {
+        $html .= "
+            <tr>
+                <td>$cliente->id</td>
+                <td>$cliente->nombre</td>
+                <td>$cliente->telefono</td>
+                <td>$cliente->puntos_acumulados</td>
+            </tr>
+        ";
+    }
+
+    $html .= '
+        </tbody>
+    </table>
+    ';
+
+    // Pintamos en la ventana del navegador la tabla
+    echo $html;
+});
+
+Route::get('/proveedores/internacionales', function() {
+    // Instrucciones: Colección de objetos proveedores
+    $proveedores = [
+        (object) [
+            'empresa' => 'PharmaGlobal', 
+            'pais_origin' => 'Alemania', 
+            'medicamento_principal' => 'Paracetamol 500mg', 
+            'tiempo_entrega_dias' => 12
+        ],
+        (object) [
+            'empresa' => 'BioLatam Labs', 
+            'pais_origin' => 'India', 
+            'medicamento_principal' => 'Amoxicilina 1g', 
+            'tiempo_entrega_dias' => 20 // Mayor a 15, activará la advertencia
+        ],
+        (object) [
+            'empresa' => 'Medix Inc', 
+            'pais_origin' => 'Estados Unidos', 
+            'medicamento_principal' => 'Ibuprofeno 400mg', 
+            'tiempo_entrega_dias' => 7
+        ]
+    ];
+
+    // Lógica de Renderizado: Estructura de la tabla HTML
+    $html = '
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>EMPRESA</th>
+                <th>PAÍS DE ORIGEN</th>
+                <th>MEDICAMENTO PRINCIPAL</th>
+                <th>TIEMPO DE ENTREGA</th>
+            </tr>
+        </thead>
+        <tbody>
+    ';
+
+    foreach($proveedores as $proveedor) {
+        // Validación: Si el tiempo es mayor a 15, agrega la advertencia de texto
+        $tiempoTexto = $proveedor->tiempo_entrega_dias . " días";
+        if ($proveedor->tiempo_entrega_dias > 15) {
+            $tiempoTexto .= " <strong>(Demora Crítica)</strong>";
+        }
+
+        $html .= "
+            <tr>
+                <td>{$proveedor->empresa}</td>
+                <td>{$proveedor->pais_origin}</td>
+                <td>{$proveedor->medicamento_principal}</td>
+                <td>{$tiempoTexto}</td>
+            </tr>
+        ";
+    }
+
+    $html .= '
+        </tbody>
+    </table>
+    ';
+
+    // Todo el bloque debe imprimirse mediante un solo echo
+    echo $html;
+});
+
+Route::get('/lotes/inventario', function() {
+    // Instrucciones: Arreglo de objetos que representan los lotes de la farmacia
+    $lotes = [
+        (object) [
+            'codigo_lote' => 'LOT-2026A', 
+            'nombre_medicamento' => 'Insulina Glargina', 
+            'cantidad_cajas' => 150, 
+            'temperatura_requerida_celsius' => 4 // Menor o igual a 5°C, activará etiqueta
+        ],
+        (object) [
+            'codigo_lote' => 'LOT-2026B', 
+            'nombre_medicamento' => 'Vitamina C Efervescente', 
+            'cantidad_cajas' => 300, 
+            'temperatura_requerida_celsius' => 22
+        ],
+        (object) [
+            'codigo_lote' => 'LOT-2026C', 
+            'nombre_medicamento' => 'Vacuna Heberbiovac HB', 
+            'cantidad_cajas' => 85, 
+            'temperatura_requerida_celsius' => 5 // Igual a 5°C, activará etiqueta
+        ]
+    ];
+
+    // Estructura inicial de la tabla HTML
+    $html = '
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>CÓDIGO LOTE</th>
+                <th>MEDICAMENTO</th>
+                <th>CANTIDAD CAJAS</th>
+                <th>TEMPERATURA REQUERIDA</th>
+            </tr>
+        </thead>
+        <tbody>
+    ';
+
+    foreach($lotes as $lote) {
+        // Lógica de Control: Evalúa la temperatura
+        $nombreMedicamento = $lote->nombre_medicamento;
+        if ($lote->temperatura_requerida_celsius <= 5) {
+            $nombreMedicamento .= " <span style='color: blue; font-weight: bold;'>[Requiere Cadena de Frío]</span>";
+        }
+
+        $html .= "
+            <tr>
+                <td>{$lote->codigo_lote}</td>
+                <td>{$nombreMedicamento}</td>
+                <td>{$lote->cantidad_cajas}</td>
+                <td>{$lote->temperatura_requerida_celsius} °C</td>
+            </tr>
+        ";
+    }
+
+    $html .= '
+        </tbody>
+    </table>
+    ';
+
+    // Imprimimos la tabla final acumulada en la variable
+    echo $html;
+});
